@@ -23,6 +23,7 @@ module Rack
         method: env["REQUEST_METHOD"],
         route: env["REQUEST_PATH"],
         ip: env["REMOTE_ADDR"],
+        status: status,
         elapsed: "#{Integer((Time.now - request_start) * 1000)}ms"
 
       [status, headers, response]
