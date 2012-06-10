@@ -11,4 +11,5 @@ Gem::Specification.new do |gem|
   gem.files = %w{lib/rack/instruments.rb}
 
   gem.add_dependency "scrolls-minimal", "~> 0.1"
+  gem.add_dependency "uuidtools",       "~> 2.1.2"
 end
