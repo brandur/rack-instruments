@@ -10,7 +10,7 @@ module Rack
       request_id = UUIDTools::UUID.timestamp_create.to_s
       request_start = Time.now
       Scrolls.log :instrumentation,
-        at:     start,
+        at:     "start",
         method: env["REQUEST_METHOD"],
         route:  env["REQUEST_PATH"],
         ip:     env["REMOTE_ADDR"],
@@ -20,7 +20,7 @@ module Rack
       status, headers, response = @app.call(env)
 
       Scrolls.log :instrumentation,
-        at:      finish,
+        at:      "finish",
         method:  env["REQUEST_METHOD"],
         route:   env["REQUEST_PATH"],
         ip:      env["REMOTE_ADDR"],
