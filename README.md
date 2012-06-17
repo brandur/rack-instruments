@@ -54,6 +54,14 @@ Rack::Instruments.configure do |config|
 end
 ```
 
+To disable ID generation:
+
+``` ruby
+Rack::Instruments.configure do |config|
+  config.id_generator = -> { nil }
+end
+```
+
 Testing
 -------
 
