@@ -5,8 +5,8 @@ Rack middleware providing extremely basic instrumentation. Idea based on [ryando
 
 After installation and configuration, two additional logging lines (sent to `$stdout`) will accompany any requests to your applications:
 
-    instrumentation method=GET path=/the-objective-c-retain-property-pattern ip=74.207.253.12 id=00749e62-b8b7-11e1-8e07-123138107430 at=start
-    instrumentation method=GET path=/the-objective-c-retain-property-pattern ip=74.207.253.12 id=00749e62-b8b7-11e1-8e07-123138107430 status=200 at=finish elapsed=1ms
+    instrumentation method=GET path=/ ip=74.207.253.12 id=00749e62-b8b7-11e1-8e07-123138107430 at=start
+    instrumentation method=GET path=/ ip=74.207.253.12 id=00749e62-b8b7-11e1-8e07-123138107430 status=200 at=finish elapsed=1ms
 
 The instrumentation middleware also injects a request ID into your request's environment to help log all events associated with a particular request. This can be abstracted with a logging helper:
 
