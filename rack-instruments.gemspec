@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name        = "rack-instruments"
-  gem.version     = "0.1.4"
+  gem.version     = "0.1.5"
 
   gem.author      = "Brandur"
   gem.email       = "brandur@mutelight.org"
@@ -10,6 +10,6 @@ Gem::Specification.new do |gem|
 
   gem.files = %w{lib/rack/instruments.rb}
 
-  gem.add_dependency "scrolls-minimal", "~> 0.1"
-  gem.add_dependency "uuidtools",       "~> 2.1.2"
+  gem.add_dependency "slides",    "~> 0.1"
+  gem.add_dependency "uuidtools", "~> 2.1.2"
 end

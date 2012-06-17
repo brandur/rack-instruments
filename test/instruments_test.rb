@@ -1,7 +1,7 @@
 require "stringio"
 require "test_helper"
 
-module Scrolls
+module Slides
   def self.log(event, attrs)
     $attrs = attrs
     yield if block_given?

@@ -14,7 +14,7 @@ module Rack
       # make ID of the request accessible to consumers down the stack
       env["REQUEST_ID"] = request_id
 
-      Scrolls.log(:instrumentation,
+      Slides.log(:instrumentation,
         method: env["REQUEST_METHOD"],
         path:   env["REQUEST_PATH"],
         ip:     env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
