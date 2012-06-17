@@ -12,8 +12,8 @@ The instrumentation middleware also injects a request ID into your request's env
 
 ``` ruby
 helpers do
-  def log(action, attrs = {}, &blk)
-    Slides.log(action, attrs.merge!(id: request.env["REQUEST_ID"]), &blk)
+  def log(event, attrs = {}, &blk)
+    Slides.log(event, attrs.merge!(id: request.env["REQUEST_ID"]), &blk)
   end
 end
 
