@@ -9,3 +9,8 @@ Installation
     gem "rack-instruments", require "rack/instruments"
 
     use Rack::Instruments
+
+Testing
+-------
+
+    rake test
