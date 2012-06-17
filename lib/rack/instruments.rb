@@ -23,7 +23,8 @@ module Rack
         at:      "finish",
         method:  env["REQUEST_METHOD"],
         route:   env["REQUEST_PATH"],
-        ip:      env["REMOTE_ADDR"],
+        ip:      request.env["X-FORWARDED-FOR"] ||
+          request.env["HTTP_X_FORWARDED_FOR"] || env["REMOTE_ADDR"],
         status:  status,
         elapsed: "#{Integer((Time.now - request_start) * 1000)}ms",
         id:      request_id
