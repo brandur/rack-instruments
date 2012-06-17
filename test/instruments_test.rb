@@ -48,7 +48,7 @@ describe Rack::Instruments do
 
   it "includes a request ID" do
     call()
-    $attrs[:id].must_match /^[a-z0-9]{8}$/
+    $attrs[:id].must_match /^[a-z0-9]{1,8}$/
   end
 
   it "injects a request ID into the environment" do
@@ -61,6 +61,11 @@ describe Rack::Instruments do
     # normally, the logger will call this lambda
     $attrs[:status].call.must_equal 200
   end
+
+  it "ignores static extensions" do
+    call("REQUEST_PATH" => "/logo.png")
+    $attrs.must_equal nil
+  end
 end
 
 describe Rack::InstrumentsConfig do
@@ -69,5 +74,12 @@ describe Rack::InstrumentsConfig do
       c.id_generator = -> { "id" }
     end
     Rack::Instruments.id_generator.call.must_equal "id"
+  end
+
+  it "configures ignored extensions" do
+    Rack::Instruments.configure do |c|
+      c.ignore_extensions = nil
+    end
+    Rack::Instruments.ignore_extensions.must_equal []
   end
 end
