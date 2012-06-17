@@ -1,5 +1,3 @@
-require "uuidtools"
-
 module Rack
   class Instruments
     def initialize(app)
@@ -7,7 +5,7 @@ module Rack
     end
 
     def call(env)
-      request_id = UUIDTools::UUID.timestamp_create.to_s
+      request_id = self.class.id_generator.call
       request_start = Time.now
       status, headers, response = nil, nil, nil
 
@@ -27,4 +25,17 @@ module Rack
       [status, headers, response]
     end
   end
+
+  module InstrumentsConfig
+    def self.extended(base)
+      base.id_generator = -> { rand(36**8).to_s(36) }
+    end
+
+    attr_accessor :id_generator
+
+    def configure
+      yield self
+    end
+  end
+  Instruments.extend(InstrumentsConfig)
 end

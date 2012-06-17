@@ -41,6 +41,19 @@ In your `config.ru`:
 use Rack::Instruments
 ```
 
+Configuration
+-------------
+
+Use `configure` with a block. For example, to use UUIDs for ID generation:
+
+``` ruby
+require 'uuidtools'
+
+Rack::Instruments.configure do |config|
+  config.id_generator = -> { UUIDTools::UUID.timestamp_create.to_s }
+end
+```
+
 Testing
 -------
 

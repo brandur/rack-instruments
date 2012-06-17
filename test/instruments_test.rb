@@ -48,7 +48,7 @@ describe Rack::Instruments do
 
   it "includes a request ID" do
     call()
-    $attrs[:id].must_match /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/
+    $attrs[:id].must_match /^[a-z0-9]{8}$/
   end
 
   it "injects a request ID into the environment" do
@@ -60,5 +60,14 @@ describe Rack::Instruments do
     call()
     # normally, the logger will call this lambda
     $attrs[:status].call.must_equal 200
+  end
+end
+
+describe Rack::InstrumentsConfig do
+  it "configures ID generation" do
+    Rack::Instruments.configure do |c|
+      c.id_generator = -> { "id" }
+    end
+    Rack::Instruments.id_generator.call.must_equal "id"
   end
 end
