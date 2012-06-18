@@ -44,7 +44,12 @@ use Rack::Instruments
 Configuration
 -------------
 
-Use `configure` with a block. For example, to use UUIDs for ID generation:
+Use `configure` with a block to change one of these settings:
+
+* **id_generator:** Subroutine used to generate identifiers for the request.
+* **ignore_extensions:** Array of extensions that shouldn't be instrumented. Defaults to well-known static files.
+
+For example, to use UUIDs for ID generation:
 
 ``` ruby
 require 'uuidtools'
