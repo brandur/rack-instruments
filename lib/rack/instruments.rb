@@ -11,7 +11,6 @@ module Rack
         }
 
       request_id = self.class.id_generator.call
-      request_start = Time.now
       status, headers, response = nil, nil, nil
 
       # make ID of the request accessible to consumers down the stack
