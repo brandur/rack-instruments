@@ -12,8 +12,8 @@ The instrumentation middleware also injects a request ID into your request's env
 
 ``` ruby
 helpers do
-  def log(event, attrs = {}, &blk)
-    Slides.log(event, attrs.merge!(id: request.env["REQUEST_ID"]), &blk)
+  def log(attrs = {}, &blk)
+    Scrolls.log(attrs.merge!(id: request.env["REQUEST_ID"]), &blk)
   end
 end
 
@@ -46,6 +46,7 @@ Configuration
 
 Use `configure` with a block to change one of these settings:
 
+* **context:** A hash of extra data context to include in the instrumentation.
 * **id_generator:** Subroutine used to generate identifiers for the request.
 * **ignore_extensions:** Array of extensions that shouldn't be instrumented. Defaults to well-known static files.
 

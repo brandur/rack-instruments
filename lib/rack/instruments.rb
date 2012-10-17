@@ -16,14 +16,18 @@ module Rack
       # make ID of the request accessible to consumers down the stack
       env["REQUEST_ID"] = request_id
 
-      Slides.log(:instrumentation,
-        method: env["REQUEST_METHOD"],
-        path:   env["REQUEST_PATH"],
-        ip:     env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
+      data = {
+        :method => env["REQUEST_METHOD"],
+        :path   => env["REQUEST_PATH"],
+        :ip     => env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
           env["REMOTE_ADDR"],
-        id:     request_id,
-        status: -> { status }) do
-          status, headers, response = @app.call(env)
+        :id     => request_id,
+        :status => lambda { status }
+      }
+      data.merge!(self.class.context) if self.class.context
+
+      Slides.log(:instrumentation, data) do
+        status, headers, response = @app.call(env)
       end
 
       [status, headers, response]
@@ -32,10 +36,12 @@ module Rack
 
   module InstrumentsConfig
     def self.extended(base)
-      base.id_generator = -> { rand(36**8).to_s(36) }
+      base.context           = nil
+      base.id_generator      = lambda { rand(36**8).to_s(36) }
       base.ignore_extensions = %w{css gif ico jpg js jpeg pdf png}
     end
 
+    attr_accessor :context
     attr_accessor :id_generator
     attr_accessor :ignore_extensions
 

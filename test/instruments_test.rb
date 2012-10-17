@@ -69,6 +69,13 @@ describe Rack::Instruments do
 end
 
 describe Rack::InstrumentsConfig do
+  it "configures extra context" do
+    Rack::Instruments.configure do |c|
+      c.context = { app: "my-app" }
+    end
+    Rack::Instruments.context.must_equal({ app: "my-app" })
+  end
+
   it "configures ID generation" do
     Rack::Instruments.configure do |c|
       c.id_generator = -> { "id" }
