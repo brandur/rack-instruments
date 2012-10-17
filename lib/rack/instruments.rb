@@ -1,3 +1,5 @@
+require "slides"
+
 module Rack
   class Instruments
     def initialize(app)
