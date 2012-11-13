@@ -53,10 +53,8 @@ Use `configure` with a block to change one of these settings:
 For example, to use UUIDs for ID generation:
 
 ``` ruby
-require 'uuidtools'
-
 Rack::Instruments.configure do |config|
-  config.id_generator = -> { UUIDTools::UUID.timestamp_create.to_s }
+  config.id_generator = -> { SecureRandom.uuid }
 end
 ```
 
