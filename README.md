@@ -1,12 +1,12 @@
 rack-instruments
 ================
 
-Rack middleware providing extremely basic instrumentation. Idea based on [ryandotsmith/instruments](https://github.com/ryandotsmith/instruments).
+Rack middleware providing extremely basic instrumentation.
 
 After installation and configuration, two additional logging lines (sent to `$stdout`) will accompany any requests to your applications:
 
-    instrumentation method=GET path=/ ip=74.207.253.12 id=pcl9yyje at=start
-    instrumentation method=GET path=/ ip=74.207.253.12 id=pcl9yyje status=200 at=finish elapsed=1ms
+    instrumentation method=GET path=/ ip=74.207.253.12 id=f9daa07c-fb93-489a-b9f4-436f71bf85c8 at=start
+    instrumentation method=GET path=/ ip=74.207.253.12 id=f9daa07c-fb93-489a-b9f4-436f71bf85c8 status=200 at=finish elapsed=1ms
 
 The instrumentation middleware also injects a request ID into your request's environment to help log all events associated with a particular request. This can be abstracted with a logging helper:
 
@@ -24,7 +24,7 @@ end
 
 A request to / will then appear on your `$stdout` with the instrumentation lines along with:
 
-    get_index id=pcl9yyje
+    get_index id=f9daa07c-fb93-489a-b9f4-436f71bf85c8
 
 Installation
 ------------
@@ -44,7 +44,7 @@ use Rack::Instruments
 Configuration
 -------------
 
-Use `configure` with a block to change one of these settings:
+Configure the module right in your middleware stack with any of the following options:
 
 * **context:** A hash of extra data context to include in the instrumentation.
 * **id_generator:** Subroutine used to generate identifiers for the request.
@@ -53,17 +53,13 @@ Use `configure` with a block to change one of these settings:
 For example, to use UUIDs for ID generation:
 
 ``` ruby
-Rack::Instruments.configure do |config|
-  config.id_generator = -> { SecureRandom.uuid }
-end
+use Rack::Instruments, id_generator: -> { rand(36**8).to_s(36) }
 ```
 
 To disable ID generation:
 
 ``` ruby
-Rack::Instruments.configure do |config|
-  config.id_generator = -> { nil }
-end
+use Rack::Instruments, id_generator: nil
 ```
 
 Testing

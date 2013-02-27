@@ -1,5 +1,6 @@
 require "stringio"
-require "test_helper"
+
+require_relative "test_helper"
 
 module Slides
   def self.log(event, attrs)
@@ -17,8 +18,8 @@ describe Rack::Instruments do
     ->(env) { $env = env ; [200, {}, ""] }
   end
 
-  def call(env = {})
-    Rack::Instruments.new(app).call(env)
+  def call(env={}, options={})
+    Rack::Instruments.new(app, options).call(env)
   end
 
   it "reads request method" do
@@ -48,7 +49,8 @@ describe Rack::Instruments do
 
   it "includes a request ID" do
     call()
-    $attrs[:id].must_match /^[a-z0-9]{1,8}$/
+    $attrs[:id].must_match \
+      /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/
   end
 
   it "injects a request ID into the environment" do
@@ -66,27 +68,19 @@ describe Rack::Instruments do
     call("REQUEST_PATH" => "/logo.png")
     $attrs.must_equal nil
   end
-end
 
-describe Rack::InstrumentsConfig do
-  it "configures extra context" do
-    Rack::Instruments.configure do |c|
-      c.context = { app: "my-app" }
-    end
-    Rack::Instruments.context.must_equal({ app: "my-app" })
+  it "takes a context option" do
+    call({}, { context: { app: "my-app" } })
+    $attrs[:app].must_equal "my-app"
   end
 
-  it "configures ID generation" do
-    Rack::Instruments.configure do |c|
-      c.id_generator = -> { "id" }
-    end
-    Rack::Instruments.id_generator.call.must_equal "id"
+  it "takes an ID generator" do
+    call({}, { id_generator: -> { "my-id" } })
+    $attrs[:id].must_equal "my-id"
   end
 
-  it "configures ignored extensions" do
-    Rack::Instruments.configure do |c|
-      c.ignore_extensions = nil
-    end
-    Rack::Instruments.ignore_extensions.must_equal []
+  it "takes ignored extensions" do
+    call({ "REQUEST_PATH" => "/logo.png" }, { ignore_extensions: nil })
+    $attrs[:path].must_equal "/logo.png"
   end
 end
