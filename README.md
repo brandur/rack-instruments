@@ -64,20 +64,21 @@ Configuration
 Configure the module right in your middleware stack with any of the following options:
 
 * **context:** A hash of extra data context to include in the instrumentation.
-* **id_generator:** Subroutine used to generate identifiers for the request.
+* **header_request_ids:** Reads UUID request IDs incoming from the `Request-ID` header and injects them into the environment along with the generated request ID. Defaults to true.
 * **ignore_extensions:** Array of extensions that shouldn't be instrumented. Defaults to well-known static files.
-* **use_header_request_ids:** Reads UUID request IDs incoming from the `Request-ID` header and injects them into the environment along with the generated request ID. Defaults to true.
+* **request_id_generator:** Subroutine used to generate identifiers for the request. Defaults to `SecureRandom.uuid`.
+* **request_id_pattern:** Pattern used to safely identify a request ID. Defaults to UUID.
 
 For example, to use UUIDs for ID generation:
 
 ``` ruby
-use Rack::Instruments, id_generator: -> { rand(36**8).to_s(36) }
+use Rack::Instruments, request_id_generator: -> { rand(36**8).to_s(36) }
 ```
 
 To disable ID generation:
 
 ``` ruby
-use Rack::Instruments, id_generator: nil
+use Rack::Instruments, request_id_generator: nil
 ```
 
 Testing

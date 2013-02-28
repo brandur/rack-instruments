@@ -96,9 +96,11 @@ describe Rack::Instruments do
     assert_equal "my-app", Hash[$data][:app]
   end
 
-  it "takes an ID generator" do
-    call({}, { id_generator: -> { "my-id" } })
-    assert_equal "my-id", Hash[$data][:id]
+  it "allows header-injected request IDs to be disabled" do
+    request_ids = [SecureRandom.uuid, SecureRandom.uuid]
+    call({ "HTTP_REQUEST_ID" => request_ids.join(", ") },
+      { header_request_ids: false })
+    assert_equal 1, $data.select { |k, v| k == :id }.count
   end
 
   it "takes ignored extensions" do
@@ -106,10 +108,14 @@ describe Rack::Instruments do
     assert_equal "/logo.png", Hash[$data][:path]
   end
 
-  it "allows header-injected request IDs to be disabled" do
-    request_ids = [SecureRandom.uuid, SecureRandom.uuid]
-    call({ "HTTP_REQUEST_ID" => request_ids.join(", ") },
-      { use_header_request_ids: false })
-    assert_equal 1, $data.select { |k, v| k == :id }.count
+  it "takes a request ID generator" do
+    call({}, { request_id_generator: -> { "my-id" } })
+    assert_equal "my-id", Hash[$data][:id]
+  end
+
+  it "takes a request ID pattern" do
+    call({ "HTTP_REQUEST_ID" => "my-id" },
+      { request_id_pattern: /my-id/ })
+    assert_equal "my-id", $data.detect { |k, v| k == :id && v == "my-id" }[1]
   end
 end

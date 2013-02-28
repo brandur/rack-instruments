@@ -9,13 +9,14 @@ module Rack
     def initialize(app, options={})
       @app = app
 
-      @context                = (options[:context] || {}).
+      @context              = (options[:context] || {}).
         map { |k, v| [k, v] }
-      @id_generator           = options.fetch(:id_generator,
-        lambda { SecureRandom.uuid })
-      @ignore_extensions      = options.fetch(:ignore_extensions,
+      @header_request_ids   = options.fetch(:header_request_ids, true)
+      @ignore_extensions    = options.fetch(:ignore_extensions,
         %w{css gif ico jpg js jpeg pdf png})
-      @use_header_request_ids = options.fetch(:use_header_request_ids, true)
+      @request_id_generator = options.fetch(:request_id_generator,
+        lambda { SecureRandom.uuid })
+      @request_id_pattern   = options.fetch(:request_id_pattern, UUID_PATTERN)
     end
 
     def call(env)
@@ -24,7 +25,7 @@ module Rack
           env["REQUEST_PATH"] =~ /\.#{ext}$/
         }
 
-      request_ids = [@id_generator.call] + extract_request_ids(env)
+      request_ids = [@request_id_generator.call] + extract_request_ids(env)
       status, headers, response = nil, nil, nil
 
       # make ID of the request accessible to consumers down the stack
@@ -50,12 +51,12 @@ module Rack
     private
 
     def extract_request_ids(env)
-      return [] unless @use_header_request_ids
+      return [] unless @header_request_ids
       request_ids = []
       if env["HTTP_REQUEST_ID"]
         request_ids = env["HTTP_REQUEST_ID"].split(",")
         request_ids.map! { |id| id.strip }
-        request_ids.select! { |id| id =~ UUID_PATTERN }
+        request_ids.select! { |id| id =~ @request_id_pattern }
       end
       request_ids
     end
