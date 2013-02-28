@@ -3,15 +3,15 @@ require "stringio"
 require_relative "test_helper"
 
 module Slides
-  def self.log(event, attrs)
-    $attrs = attrs
+  def self.log_array(event, data)
+    $data = data
     yield if block_given?
   end
 end
 
 describe Rack::Instruments do
   before do
-    $attrs, $env = nil, nil
+    $data, $env = nil, nil
   end
 
   def app
@@ -24,63 +24,85 @@ describe Rack::Instruments do
 
   it "reads request method" do
     call("REQUEST_METHOD" => "GET")
-    $attrs[:method].must_equal "GET"
+    #assert_equal "GET", $data.detect { |k, v| k == :method }[1]
+    assert_equal "GET", Hash[$data][:method]
   end
 
   it "reads request path" do
     call("REQUEST_PATH" => "/index")
-    $attrs[:path].must_equal "/index"
+    assert_equal "/index", Hash[$data][:path]
   end
 
   it "prefers to read IP from X-FORWARDED-FOR" do
     call("X-FORWARDED-FOR" => "1.2.3.4", "REMOTE_ADDR" => "2.3.4.5")
-    $attrs[:ip].must_equal "1.2.3.4"
+    assert_equal "1.2.3.4", Hash[$data][:ip]
   end
 
   it "prefers to read IP from HTTP_X_FORWARDED_FOR" do
     call("HTTP_X_FORWARDED_FOR" => "1.2.3.4", "REMOTE_ADDR" => "2.3.4.5")
-    $attrs[:ip].must_equal "1.2.3.4"
+    assert_equal "1.2.3.4", Hash[$data][:ip]
   end
 
   it "will read IP from REMOTE_ADDR without a proxy" do
     call("REMOTE_ADDR" => "2.3.4.5")
-    $attrs[:ip].must_equal "2.3.4.5"
+    assert_equal "2.3.4.5", Hash[$data][:ip]
   end
 
   it "includes a request ID" do
     call()
-    $attrs[:id].must_match \
-      /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}/
+    assert_match Rack::Instruments::UUID_PATTERN, Hash[$data][:id]
+  end
+
+  it "includes a set of request IDs from headers" do
+    request_ids = [SecureRandom.uuid, SecureRandom.uuid]
+    call("HTTP_REQUEST_ID" => request_ids.join(", "))
+    request_ids = $data.select { |k, v| k == :id }
+    assert_equal 3, request_ids.count
+    request_ids.each do |id|
+      assert_match Rack::Instruments::UUID_PATTERN, Hash[$data][:id]
+    end
+  end
+
+  it "ignores invalid request IDs coming from headers" do
+    call("HTTP_REQUEST_ID" => "invalid-request-id")
+    assert_equal 1, $data.select { |k, v| k == :id }.count
   end
 
   it "injects a request ID into the environment" do
     call()
-    $env["REQUEST_ID"].must_equal $attrs[:id]
+    assert_equal [Hash[$data][:id]], $env["REQUEST_ID"]
+  end
+
+  it "injects a set of request IDs into the environment" do
+    request_ids = [SecureRandom.uuid, SecureRandom.uuid]
+    call("HTTP_REQUEST_ID" => request_ids.join(", "))
+    current_id = $data.detect { |k, v| k == :id }[1]
+    assert_equal [current_id] + request_ids, $env["REQUEST_ID"]
   end
 
   it "includes the status that bubbled up" do
     call()
     # normally, the logger will call this lambda
-    $attrs[:status].call.must_equal 200
+    assert_equal 200, Hash[$data][:status].call
   end
 
   it "ignores static extensions" do
     call("REQUEST_PATH" => "/logo.png")
-    $attrs.must_equal nil
+    assert_equal nil, $attrs
   end
 
   it "takes a context option" do
     call({}, { context: { app: "my-app" } })
-    $attrs[:app].must_equal "my-app"
+    assert_equal "my-app", Hash[$data][:app]
   end
 
   it "takes an ID generator" do
     call({}, { id_generator: -> { "my-id" } })
-    $attrs[:id].must_equal "my-id"
+    assert_equal "my-id", Hash[$data][:id]
   end
 
   it "takes ignored extensions" do
     call({ "REQUEST_PATH" => "/logo.png" }, { ignore_extensions: nil })
-    $attrs[:path].must_equal "/logo.png"
+    assert_equal "/logo.png", Hash[$data][:path]
   end
 end
