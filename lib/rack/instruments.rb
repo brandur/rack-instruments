@@ -9,11 +9,13 @@ module Rack
     def initialize(app, options={})
       @app = app
 
-      @context           = (options[:context] || {}).map { |k, v| [k, v] }
-      @id_generator      = options.fetch(:id_generator,
+      @context                = (options[:context] || {}).
+        map { |k, v| [k, v] }
+      @id_generator           = options.fetch(:id_generator,
         lambda { SecureRandom.uuid })
-      @ignore_extensions = options.fetch(:ignore_extensions,
+      @ignore_extensions      = options.fetch(:ignore_extensions,
         %w{css gif ico jpg js jpeg pdf png})
+      @use_header_request_ids = options.fetch(:use_header_request_ids, true)
     end
 
     def call(env)
@@ -48,6 +50,7 @@ module Rack
     private
 
     def extract_request_ids(env)
+      return [] unless @use_header_request_ids
       request_ids = []
       if env["HTTP_REQUEST_ID"]
         request_ids = env["HTTP_REQUEST_ID"].split(",")

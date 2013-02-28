@@ -105,4 +105,11 @@ describe Rack::Instruments do
     call({ "REQUEST_PATH" => "/logo.png" }, { ignore_extensions: nil })
     assert_equal "/logo.png", Hash[$data][:path]
   end
+
+  it "allows header-injected request IDs to be disabled" do
+    request_ids = [SecureRandom.uuid, SecureRandom.uuid]
+    call({ "HTTP_REQUEST_ID" => request_ids.join(", ") },
+      { use_header_request_ids: false })
+    assert_equal 1, $data.select { |k, v| k == :id }.count
+  end
 end
