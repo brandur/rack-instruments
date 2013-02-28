@@ -25,11 +25,18 @@ module Rack
           env["REQUEST_PATH"] =~ /\.#{ext}$/
         }
 
-      request_ids = [@request_id_generator.call] + extract_request_ids(env)
+      request_ids = [@request_id_generator.call]
       status, headers, response = nil, nil, nil
 
       # make ID of the request accessible to consumers down the stack
-      env["REQUEST_ID"] = request_ids
+      env["REQUEST_ID"] = request_ids[0]
+
+      # Extract request IDs from incoming headers as well. Can be used for
+      # identifying a request across a number of components in SOA.
+      if @header_request_ids
+        request_ids += extract_request_ids(env)
+        env["REQUEST_IDS"] = request_ids
+      end
 
       data = [
         [:method, env["REQUEST_METHOD"]],
@@ -51,7 +58,6 @@ module Rack
     private
 
     def extract_request_ids(env)
-      return [] unless @header_request_ids
       request_ids = []
       if env["HTTP_REQUEST_ID"]
         request_ids = env["HTTP_REQUEST_ID"].split(",")

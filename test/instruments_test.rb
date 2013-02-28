@@ -70,14 +70,14 @@ describe Rack::Instruments do
 
   it "injects a request ID into the environment" do
     call()
-    assert_equal [Hash[$data][:id]], $env["REQUEST_ID"]
+    assert_equal Hash[$data][:id], $env["REQUEST_ID"]
   end
 
   it "injects a set of request IDs into the environment" do
     request_ids = [SecureRandom.uuid, SecureRandom.uuid]
     call("HTTP_REQUEST_ID" => request_ids.join(", "))
     current_id = $data.detect { |k, v| k == :id }[1]
-    assert_equal [current_id] + request_ids, $env["REQUEST_ID"]
+    assert_equal [current_id] + request_ids, $env["REQUEST_IDS"]
   end
 
   it "includes the status that bubbled up" do
