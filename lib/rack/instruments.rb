@@ -9,8 +9,7 @@ module Rack
     def initialize(app, options={})
       @app = app
 
-      @context              = (options[:context] || {}).
-        map { |k, v| [k, v] }
+      @context              = options[:context]
       @header_request_ids   = options.fetch(:header_request_ids, true)
       @ignore_extensions    = options.fetch(:ignore_extensions,
         %w{css gif ico jpg js jpeg pdf png})
@@ -38,17 +37,17 @@ module Rack
         env["REQUEST_IDS"] = request_ids
       end
 
-      data = [
-        [:method, env["REQUEST_METHOD"]],
-        [:path, env["REQUEST_PATH"]],
-        [:ip, env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
-          env["REMOTE_ADDR"]],
-        [:status, lambda { status }],
-      ]
-      data += request_ids.map { |id| [:id, id] }
-      data += @context if @context
+      data = {
+        method: env["REQUEST_METHOD"],
+        path:   env["REQUEST_PATH"],
+        id:     request_ids.join(","),
+        ip:     env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
+          env["REMOTE_ADDR"],
+        status: lambda { status },
+      }
+      data.merge!(@context) if @context
 
-      Slides.log_array(:instrumentation, data) do
+      Slides.log(:instrumentation, data) do
         status, headers, response = @app.call(env)
       end
 
