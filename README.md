@@ -40,7 +40,7 @@ Request-ID: b1277330-1d91-4394-a61f-f72ea9459802, 1ee10f3f-1d01-4715-85fc-5c9a00
 An instrumentation line like the following would be generated:
 
 ```
-get_index id=f9daa07c-fb93-489a-b9f4-436f71bf85c8 id=b1277330-1d91-4394-a61f-f72ea9459802 id=1ee10f3f-1d01-4715-85fc-5c9a003f741d
+get_index id=f9daa07c-fb93-489a-b9f4-436f71bf85c8,b1277330-1d91-4394-a61f-f72ea9459802,1ee10f3f-1d01-4715-85fc-5c9a003f741d
 ```
 
 Installation
