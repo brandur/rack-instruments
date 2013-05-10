@@ -38,12 +38,12 @@ module Rack
       end
 
       data = {
-        method: env["REQUEST_METHOD"],
-        path:   env["REQUEST_PATH"],
-        id:     request_ids.join(","),
-        ip:     env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
+        method:     env["REQUEST_METHOD"],
+        path:       env["REQUEST_PATH"],
+        ip:         env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
           env["REMOTE_ADDR"],
-        status: lambda { status },
+        request_id: request_ids.join(","),
+        status:     lambda { status },
       }
       data.merge!(@context) if @context
 

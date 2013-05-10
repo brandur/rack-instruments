@@ -49,13 +49,13 @@ describe Rack::Instruments do
 
   it "includes a request ID" do
     call()
-    assert_match Rack::Instruments::UUID_PATTERN, $data[:id]
+    assert_match Rack::Instruments::UUID_PATTERN, $data[:request_id]
   end
 
   it "includes a set of request IDs from headers" do
     request_ids = [SecureRandom.uuid, SecureRandom.uuid]
     call("HTTP_REQUEST_ID" => request_ids.join(", "))
-    request_ids = $data[:id].split(",")
+    request_ids = $data[:request_id].split(",")
     assert_equal 3, request_ids.count
     request_ids.each do |id|
       assert_match Rack::Instruments::UUID_PATTERN, id
@@ -64,18 +64,18 @@ describe Rack::Instruments do
 
   it "ignores invalid request IDs coming from headers" do
     call("HTTP_REQUEST_ID" => "invalid-request-id")
-    assert_equal 1, $data.select { |k, v| k == :id }.count
+    assert_equal 1, $data.select { |k, v| k == :request_id }.count
   end
 
   it "injects a request ID into the environment" do
     call()
-    assert_equal $data[:id], $env["REQUEST_ID"]
+    assert_equal $data[:request_id], $env["REQUEST_ID"]
   end
 
   it "injects a set of request IDs into the environment" do
     request_ids = [SecureRandom.uuid, SecureRandom.uuid]
     call("HTTP_REQUEST_ID" => request_ids.join(", "))
-    assert_equal $data[:id].split(","), $env["REQUEST_IDS"]
+    assert_equal $data[:request_id].split(","), $env["REQUEST_IDS"]
   end
 
   it "includes the status that bubbled up" do
@@ -98,7 +98,7 @@ describe Rack::Instruments do
     request_ids = [SecureRandom.uuid, SecureRandom.uuid]
     call({ "HTTP_REQUEST_ID" => request_ids.join(", ") },
       { header_request_ids: false })
-    assert_equal 1, $data.select { |k, v| k == :id }.count
+    assert_equal 1, $data.select { |k, v| k == :request_id }.count
   end
 
   it "takes ignored extensions" do
@@ -108,12 +108,12 @@ describe Rack::Instruments do
 
   it "takes a request ID generator" do
     call({}, { request_id_generator: -> { "my-id" } })
-    assert_equal "my-id", $data[:id]
+    assert_equal "my-id", $data[:request_id]
   end
 
   it "takes a request ID pattern" do
     call({ "HTTP_REQUEST_ID" => "my-id" },
       { request_id_pattern: /my-id/ })
-    assert_match /,my-id/, $data[:id]
+    assert_match /,my-id/, $data[:request_id]
   end
 end
