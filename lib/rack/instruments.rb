@@ -40,8 +40,7 @@ module Rack
       data = {
         method:     env["REQUEST_METHOD"],
         path:       env["REQUEST_PATH"],
-        ip:         env["X-FORWARDED-FOR"] || env["HTTP_X_FORWARDED_FOR"] ||
-          env["REMOTE_ADDR"],
+        ip:         env["HTTP_X_FORWARDED_FOR"] || env["REMOTE_ADDR"],
         request_id: request_ids.join(","),
         status:     lambda { status },
       }

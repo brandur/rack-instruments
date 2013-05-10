@@ -33,7 +33,7 @@ describe Rack::Instruments do
   end
 
   it "prefers to read IP from X-FORWARDED-FOR" do
-    call("X-FORWARDED-FOR" => "1.2.3.4", "REMOTE_ADDR" => "2.3.4.5")
+    call("HTTP_X_FORWARDED_FOR" => "1.2.3.4", "REMOTE_ADDR" => "2.3.4.5")
     assert_equal "1.2.3.4", $data[:ip]
   end
 
