@@ -34,7 +34,7 @@ module Rack
       # identifying a request across a number of components in SOA.
       if @header_request_ids
         request_ids += extract_request_ids(env)
-        env["REQUEST_IDS"] = request_ids
+        env["REQUEST_IDS"] = request_ids.join(",")
       end
 
       data = {

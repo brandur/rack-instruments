@@ -75,7 +75,7 @@ describe Rack::Instruments do
   it "injects a set of request IDs into the environment" do
     request_ids = [SecureRandom.uuid, SecureRandom.uuid]
     call("HTTP_REQUEST_ID" => request_ids.join(", "))
-    assert_equal $data[:request_id].split(","), $env["REQUEST_IDS"]
+    assert_equal $data[:request_id], $env["REQUEST_IDS"]
   end
 
   it "includes the status that bubbled up" do
