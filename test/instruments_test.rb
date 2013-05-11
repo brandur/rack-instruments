@@ -62,6 +62,13 @@ describe Rack::Instruments do
     end
   end
 
+  it "matches a UUID request ID without hyphens" do
+    request_id = SecureRandom.uuid.gsub(/-/, '')
+    call("HTTP_REQUEST_ID" => request_id)
+    request_ids = $data[:request_id].split(",")
+    assert_equal request_id, request_ids[1]
+  end
+
   it "ignores invalid request IDs coming from headers" do
     call("HTTP_REQUEST_ID" => "invalid-request-id")
     assert_equal 1, $data.select { |k, v| k == :request_id }.count

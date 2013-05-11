@@ -65,6 +65,7 @@ Configure the module right in your middleware stack with any of the following op
 
 * **context:** A hash of extra data context to include in the instrumentation.
 * **header_request_ids:** Reads UUID request IDs incoming from the `Request-ID` header and injects them into the environment along with the generated request ID. Defaults to true.
+* **heroku_request_id:** Use `Heroku-Request-Id` as the current request's ID if available. Defaults to true.
 * **ignore_extensions:** Array of extensions that shouldn't be instrumented. Defaults to well-known static files.
 * **request_id_generator:** Subroutine used to generate identifiers for the request. Defaults to `SecureRandom.uuid`.
 * **request_id_pattern:** Pattern used to safely identify a request ID. Defaults to UUID.
