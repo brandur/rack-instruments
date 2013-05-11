@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name        = "rack-instruments"
-  gem.version     = "0.3.0"
+  gem.version     = "0.3.1"
 
   gem.author      = "Brandur"
   gem.email       = "brandur@mutelight.org"
