@@ -17,6 +17,7 @@ module Rack
       @request_id_generator = options.fetch(:request_id_generator,
         lambda { SecureRandom.uuid })
       @request_id_pattern   = options.fetch(:request_id_pattern, UUID_PATTERN)
+      @response_request_id  = options.fetch(:response_request_id, false)
     end
 
     def call(env)
@@ -49,6 +50,11 @@ module Rack
 
       Slides.log(:instrumentation, data) do
         status, headers, response = @app.call(env)
+      end
+
+      # optionally, inject a request ID into the reponse headers
+      if @response_request_id
+        headers["Request-Id"] = request_ids[0]
       end
 
       [status, headers, response]

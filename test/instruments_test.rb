@@ -123,4 +123,9 @@ describe Rack::Instruments do
       { request_id_pattern: /my-id/ })
     assert_match /,my-id/, $data[:request_id]
   end
+
+  it "injects a request ID into the response" do
+    status, headers, response = call({}, { response_request_id: true })
+    assert_equal $data[:request_id], headers["Request-Id"]
+  end
 end

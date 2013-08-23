@@ -69,6 +69,7 @@ Configure the module right in your middleware stack with any of the following op
 * **ignore_extensions:** Array of extensions that shouldn't be instrumented. Defaults to well-known static files.
 * **request_id_generator:** Subroutine used to generate identifiers for the request. Defaults to `SecureRandom.uuid`.
 * **request_id_pattern:** Pattern used to safely identify a request ID. Defaults to UUID.
+* **response_request_id:** Inject this request's ID into the response headers.
 
 For example, to use UUIDs for ID generation:
 
