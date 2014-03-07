@@ -74,9 +74,9 @@ module Rack
 
     # uses Heroku-Request-Id or falls back to a generator
     def current_request_id(env)
-      if @heroku_request_id && env["HTTP_HEROKU_REQUEST_ID"] &&
-        env["HTTP_HEROKU_REQUEST_ID"] =~ @request_id_pattern
-        env["HTTP_HEROKU_REQUEST_ID"]
+      if @heroku_request_id && env["HTTP_X_REQUEST_ID"] &&
+        env["HTTP_X_REQUEST_ID"] =~ @request_id_pattern
+        env["HTTP_X_REQUEST_ID"]
       else
         @request_id_generator.call
       end
